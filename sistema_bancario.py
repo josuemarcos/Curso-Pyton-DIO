@@ -1,3 +1,4 @@
+from datetime import datetime, date
 menu = """
 
 [d] Depositar
@@ -9,9 +10,10 @@ menu = """
 
 saldo = 300
 quantia_maxima_saque = 500
-extrato = " "
+extrato = []
 numero_saques = 0
 LIMITE_SAQUES = 3
+LIMITE_OPERACOES = 3
 
 
 def deposito(valor):
@@ -21,10 +23,9 @@ def deposito(valor):
     if valor.isdigit() and float(valor) > 0:
         valor_numerico = float(valor)
         saldo += valor_numerico
-        extrato+= f'Operação - Depósito; Valor - {valor_numerico}\n'
+        extrato.append(f'Operação - Depósito; Valor - {valor_numerico}; Realizada em {datetime.now()}') 
     else:
-        print('Valor inválido!')
-        
+        print('Valor inválido!') 
         
 def saque(valor):
     global quantia_maxima_saque
@@ -42,15 +43,30 @@ def saque(valor):
         else:
             saldo -= valor_numerico
             numero_saques += 1
-            extrato+= f'\nOperação - Saque; Valor - R$ {valor_numerico:.2f}\n'
+            extrato.append(f'Operação - Saque; Valor - R$ {valor_numerico:.2f}; Realizada em {datetime.now()}') 
     else:
         print('Valor inválido!')
         
+def verifica_limite_diario_de_operacoes(data):
+    global extrato
+    numero_operacoes = 0
+    data_string = str(data)
+    for registro in extrato:
+        if data_string in registro:
+            numero_operacoes+=1
+    return numero_operacoes
+    
+
+        
+
 
 while True:
     opcao = input(menu)
     
-    if opcao == 'd':
+    if (opcao == 'd' or opcao == 's') and verifica_limite_diario_de_operacoes(date.today()) >= LIMITE_OPERACOES:
+        print('Número de operações diárias excedido!')
+        
+    elif opcao == 'd':
         valor_deposito = input('Digite o valor a ser depositado: ')
         deposito(valor_deposito)
 
@@ -63,11 +79,11 @@ while True:
     elif opcao == 'e':
         
         print('Histórico de operações:')
-        print(extrato)
+        for transacao in extrato:
+            print(transacao)
         print(f'Saldo atual: R$ {saldo:.2f}')
     elif opcao == 'q':
         break
-    
+
     else:
         print('Operação inválida, por favor selecione novamente a operação desejada')
-    
