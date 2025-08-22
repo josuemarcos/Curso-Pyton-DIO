@@ -4,8 +4,9 @@ menu = """
 [d] Depositar
 [s] Sacar
 [e] Extrato
-[u] Cadastrar Usuário
-[c] Criar Conta
+[nc] Nova Conta
+[lc] Listar Contas
+[nu] Novo Usuário
 [q] Sair
 
 => """
@@ -70,6 +71,13 @@ def verifica_usuario_cadastrado(cpf, lista_usuarios):
             usuario_encontrado = usuario
     return usuario_encontrado
 
+def filtrar_contas_por_cpf(cpf, lista_de_contas):
+    contas_encontradas = []
+    for conta in lista_de_contas:
+        if cpf == conta.get('cpf'):
+            contas_encontradas.append(conta)
+    return contas_encontradas
+
 def solicita_endereco():
     print('---ENDEREÇO---')
     logradouro = input('Digite o Logradouro do usuário: ')
@@ -92,9 +100,11 @@ def criar_conta(lista_de_contas, lista_de_usuarios):
         conta = {
             'agencia': '0001',
             'numero_conta': numero_conta,
-            'usuario': usuario['nome']
+            'usuario': usuario['nome'],
+            'cpf': usuario['cpf']
         }
         lista_de_contas.append(conta)
+        print('Conta criada com sucesso!')
     else:
         print("Usuário não cadastrado na base de dados!")
     return lista_de_contas
@@ -116,9 +126,23 @@ def criar_usuario(lista):
             'endereco': endereco
         }
         lista.append(novo_usuario)
+        print('Usuário Cadastrado com Sucesso!')
     return lista
 
-def main():    
+def listar_contas(lista_de_contas, lista_de_usuarios):
+    cpf = input('Digite o CPF do usuário: ')
+    if verifica_usuario_cadastrado(cpf, lista_de_usuarios):
+        contas = filtrar_contas_por_cpf(cpf, lista_de_contas)
+        if contas:
+            for conta in contas:
+                print(f"Agência: {conta['agencia']} - Número da conta: {conta['numero_conta']} - Titular: {conta['usuario']}")
+        else:
+            print('Este usuário não possui contas cadastradas!')
+    else:
+        print('Usuário não cadastrado na base de dados!')
+    
+
+def main(saldo, extrato, quantia_maxima_saque, usuarios, contas, numero_saques, LIMITE_OPERACOES, LIMITE_SAQUES):    
     while True:
         opcao = input(menu)
         
@@ -139,12 +163,17 @@ def main():
                                             limite_de_saques=LIMITE_SAQUES)
         elif opcao == 'e':
             verifica_extrato(saldo, extrato=extrato)
-        elif opcao == 'u':
+        elif opcao == 'nu':
             usuarios = criar_usuario(usuarios)
-        elif opcao == 'c':
+        elif opcao == 'nc':
             contas = criar_conta(contas, usuarios)
+        elif opcao == 'lc':
+            listar_contas(contas, usuarios)
         elif opcao == 'q':
             break
-
         else:
             print('Operação inválida, por favor selecione novamente a operação desejada')
+
+
+if __name__ == "__main__":
+    main(saldo, extrato, quantia_maxima_saque, usuarios, contas, numero_saques, LIMITE_OPERACOES, LIMITE_SAQUES)
