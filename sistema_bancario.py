@@ -11,14 +11,7 @@ menu = """
 
 => """
 
-saldo = 300
-quantia_maxima_saque = 500
-extrato = []
-usuarios = []
-contas = []
-numero_saques = 0
-LIMITE_SAQUES = 2
-LIMITE_OPERACOES = 3
+
 
 
 def deposito(valor, saldo, extrato):  
@@ -26,6 +19,7 @@ def deposito(valor, saldo, extrato):
         valor_numerico = float(valor)
         saldo += valor_numerico
         extrato.append(f'Operação - Depósito; Valor - {valor_numerico}; Realizada em {datetime.now()}') 
+        print('--Depósito realizado com sucesso!--')
     else:
         print('Valor inválido!') 
     return saldo, extrato
@@ -42,14 +36,14 @@ def saque(*,valor, quantia_maxima_saque, saldo, extrato, numero_saques, limite_d
             else:
                 saldo -= valor_numerico
                 numero_saques += 1
-                extrato.append(f'Operação - Saque; Valor - R$ {valor_numerico:.2f}; Realizada em {datetime.now()}') 
+                extrato.append(f'Operação - Saque; Valor - R$ {valor_numerico:.2f}; Realizada em {datetime.now()}')
+                print('--Saque realizado com sucesso!--') 
         else:
             print('Valor inválido!')
     else:
          print('Número de saques excedido!')
     return saldo, extrato, numero_saques
-        
-            
+                    
 def verifica_limite_diario_de_operacoes(data, extrato):
     numero_operacoes = 0
     data_string = str(data)
@@ -142,7 +136,15 @@ def listar_contas(lista_de_contas, lista_de_usuarios):
         print('Usuário não cadastrado na base de dados!')
     
 
-def main(saldo, extrato, quantia_maxima_saque, usuarios, contas, numero_saques, LIMITE_OPERACOES, LIMITE_SAQUES):    
+def main():
+    saldo = 300
+    quantia_maxima_saque = 500
+    extrato = []
+    usuarios = []
+    contas = []
+    numero_saques = 0
+    LIMITE_SAQUES = 3
+    LIMITE_OPERACOES = 10    
     while True:
         opcao = input(menu)
         
@@ -175,5 +177,4 @@ def main(saldo, extrato, quantia_maxima_saque, usuarios, contas, numero_saques, 
             print('Operação inválida, por favor selecione novamente a operação desejada')
 
 
-if __name__ == "__main__":
-    main(saldo, extrato, quantia_maxima_saque, usuarios, contas, numero_saques, LIMITE_OPERACOES, LIMITE_SAQUES)
+main()
