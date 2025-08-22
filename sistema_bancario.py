@@ -14,7 +14,7 @@ menu = """
 
 
 
-def deposito(valor, saldo, extrato):  
+def deposito(valor, saldo, extrato, /):  
     if valor.isdigit() and float(valor) > 0:
         valor_numerico = float(valor)
         saldo += valor_numerico
@@ -52,7 +52,7 @@ def verifica_limite_diario_de_operacoes(data, extrato):
             numero_operacoes+=1
     return numero_operacoes
 
-def verifica_extrato(saldo, *, extrato):
+def verifica_extrato(saldo, /, *, extrato):
     print('Histórico de operações:')
     for transacao in extrato:
         print(transacao)
