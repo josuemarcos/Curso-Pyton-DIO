@@ -65,13 +65,6 @@ def verifica_usuario_cadastrado(cpf, lista_usuarios):
             usuario_encontrado = usuario
     return usuario_encontrado
 
-def filtrar_contas_por_cpf(cpf, lista_de_contas):
-    contas_encontradas = []
-    for conta in lista_de_contas:
-        if cpf == conta.get('cpf'):
-            contas_encontradas.append(conta)
-    return contas_encontradas
-
 def solicita_endereco():
     print('---ENDEREÇO---')
     logradouro = input('Digite o Logradouro do usuário: ')
@@ -86,13 +79,13 @@ def cria_numero_conta(lista_contas):
     numero_conta = len(lista_contas) + 1
     return numero_conta
 
-def criar_conta(lista_de_contas, lista_de_usuarios):
+def criar_conta(lista_de_contas, lista_de_usuarios, agencia):
     cpf = input('Informe o CPF do usuário: ')
     usuario = verifica_usuario_cadastrado(cpf, lista_de_usuarios)
     if usuario:
-        numero_conta = cria_numero_conta(contas)
+        numero_conta = cria_numero_conta(lista_de_contas)
         conta = {
-            'agencia': '0001',
+            'agencia': agencia,
             'numero_conta': numero_conta,
             'usuario': usuario['nome'],
             'cpf': usuario['cpf']
@@ -123,18 +116,13 @@ def criar_usuario(lista):
         print('Usuário Cadastrado com Sucesso!')
     return lista
 
-def listar_contas(lista_de_contas, lista_de_usuarios):
-    cpf = input('Digite o CPF do usuário: ')
-    if verifica_usuario_cadastrado(cpf, lista_de_usuarios):
-        contas = filtrar_contas_por_cpf(cpf, lista_de_contas)
-        if contas:
-            for conta in contas:
-                print(f"Agência: {conta['agencia']} - Número da conta: {conta['numero_conta']} - Titular: {conta['usuario']}")
-        else:
-            print('Este usuário não possui contas cadastradas!')
+def listar_contas(lista_de_contas):
+    if lista_de_contas:
+        for conta in lista_de_contas:
+            print(f"Agência: {conta['agencia']} - Número da conta: {conta['numero_conta']} - Titular: {conta['usuario']}")
     else:
-        print('Usuário não cadastrado na base de dados!')
-    
+        print('Não há contas cadastradas!')
+
 
 def main():
     saldo = 300
@@ -144,7 +132,8 @@ def main():
     contas = []
     numero_saques = 0
     LIMITE_SAQUES = 3
-    LIMITE_OPERACOES = 10    
+    LIMITE_OPERACOES = 10
+    AGENCIA = '0001'
     while True:
         opcao = input(menu)
         
@@ -168,9 +157,9 @@ def main():
         elif opcao == 'nu':
             usuarios = criar_usuario(usuarios)
         elif opcao == 'nc':
-            contas = criar_conta(contas, usuarios)
+            contas = criar_conta(contas, usuarios, AGENCIA)
         elif opcao == 'lc':
-            listar_contas(contas, usuarios)
+            listar_contas(contas)
         elif opcao == 'q':
             break
         else:
