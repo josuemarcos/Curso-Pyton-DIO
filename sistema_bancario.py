@@ -168,9 +168,84 @@ def selecionar_conta(numero_da_conta, lista_de_contas):
     for conta in lista_de_contas:
         if conta.numero == numero_da_conta:
             return conta
-        
-    
-    
+def cadastra_usuario(lista_de_usuarios):
+    cpf = input('digite seu cpf: ')
+    if not cpf.isdigit():
+        print("CPF inválido!")
+    elif verifica_usuario_cadastrado(cpf, lista_de_usuarios):
+        print('Usuário já cadastrado!')
+    else:
+        nome = input('digite seu nome: ')
+        endereco = input('digite seu endereço: ')
+        data_nascimento = input('digite sua data de nascimento: ')
+        lista_de_usuarios.append(PessoaFisica(
+            endereco, cpf, nome, data_nascimento
+        ))        
+def cadastra_conta(lista_de_usuarios, lista_de_contas):
+    cpf = input('Informe o CPF do cliente: ')
+    if verifica_usuario_cadastrado(cpf, lista_de_usuarios):
+        numero_conta = len(lista_de_contas) + 1
+        usuario = verifica_usuario_cadastrado(cpf, lista_de_usuarios)
+        nova_conta = ContaCorrente.nova_conta(numero_conta, usuario)
+        lista_de_contas.append(nova_conta)
+    else:
+        print('Usuário não cadastrado!')    
+def lista_contas(lista_de_usuarios, lista_de_contas):
+    cpf = input('Inform o CPF do usuário ')
+    if verifica_usuario_cadastrado(cpf, lista_de_usuarios):
+        contas_do_usuario = filtrar_contas_por_usuario(cpf, lista_de_contas)
+        if contas_do_usuario:
+            for conta in contas_do_usuario:
+                print(conta)
+    else:
+        print('Usuário não cadastrado!')    
+def realiza_deposito(lista_de_usuarios, lista_de_contas):
+    cpf = input('Informe o CPF do cliente: ')
+    if verifica_usuario_cadastrado(cpf, lista_de_usuarios):
+        contas_do_usuario = filtrar_contas_por_usuario(cpf, lista_de_contas)
+        if len(contas_do_usuario) == 0:
+            print('Este usuário não possui nenhuma conta cadastrada!')
+        else:
+            numero_da_conta = int(input('Digite o número da conta em que deseja fazer a operação: '))
+            conta_selecionada = selecionar_conta(numero_da_conta, lista_de_contas)
+            if conta_selecionada:
+                valor_do_deposito = float(input('Deigite o valor que deseja depositar: '))
+                Deposito(valor_do_deposito).registrar(conta_selecionada)
+            else:
+                print('Número de conta inválido!')       
+    else:
+        print('Usuário não cadastrado')
+def realiza_saque(lista_de_usuarios, lista_de_contas):
+    cpf = input('Informe o CPF do cliente: ')
+    if verifica_usuario_cadastrado(cpf, lista_de_usuarios):
+        contas_do_usuario = filtrar_contas_por_usuario(cpf, lista_de_contas)
+        if len(contas_do_usuario) == 0:
+            print('Este usuário não possui nenhuma conta cadastrada!')
+        else:
+            numero_da_conta = int(input('Digite o número da conta em que deseja fazer a operação: '))
+            conta_selecionada = selecionar_conta(numero_da_conta, lista_de_contas)
+            if conta_selecionada:
+                valor_do_saque = float(input('Deigite o valor que deseja sacar: '))
+                Saque(valor_do_saque).registrar(conta_selecionada)
+            else:
+                print('Número de conta inválido!')       
+    else:
+        print('Usuário não cadastrado')
+def exibe_extrato(lista_de_usuarios, lista_de_contas):
+    cpf = input('Informe o CPF do cliente: ')
+    if verifica_usuario_cadastrado(cpf, lista_de_usuarios):
+        contas_usuario = filtrar_contas_por_usuario(cpf, lista_de_contas)
+        for conta in contas_usuario:
+            print(f"Extrato da conta número {conta.numero}")
+            lista_de_transacoes = conta.historico.transacoes
+            for transacao in lista_de_transacoes:
+                print(f"Tipo: {transacao['tipo']}, Valor: {transacao['valor']}, Data: {transacao['data']} ")
+            print(f"Saldo: {conta.saldo}")
+    else:
+        print('Usuário não possui contas cadastradas')    
+
+
+
 
 def main():
     usuarios = []
@@ -178,80 +253,17 @@ def main():
     while True:
         opcao = input(menu)
         if opcao == 'nu':
-            cpf = input('digite seu cpf: ')
-            if not cpf.isdigit():
-                print("CPF inválido!")
-            elif verifica_usuario_cadastrado(cpf, usuarios):
-                print('Usuário já cadastrado!')
-            else:
-                nome = input('digite seu nome: ')
-                endereco = input('digite seu endereço: ')
-                data_nascimento = input('digite sua data de nascimento: ')
-                usuarios.append(PessoaFisica(
-                    endereco, cpf, nome, data_nascimento
-                ))
+            cadastra_usuario(usuarios)
         if opcao == 'nc':
-            cpf = input('Informe o CPF do cliente: ')
-            if verifica_usuario_cadastrado(cpf, usuarios):
-                numero_conta = len(contas) + 1
-                usuario = verifica_usuario_cadastrado(cpf, usuarios)
-                nova_conta = ContaCorrente.nova_conta(numero_conta, usuario)
-                contas.append(nova_conta)
-            else:
-                print('Usuário não cadastrado!')
+            cadastra_conta(usuarios, contas)
         if opcao == 'lc':
-            cpf = input('Inform o CPF do usuário ')
-            if verifica_usuario_cadastrado(cpf, usuarios):
-                contas_do_usuario = filtrar_contas_por_usuario(cpf, contas)
-                if contas_do_usuario:
-                    for conta in contas_do_usuario:
-                        print(conta)
-            else:
-                print('Usuário não cadastrado!')
+            lista_contas(usuarios, contas)
         if opcao == 'd':
-            cpf = input('Informe o CPF do cliente: ')
-            if verifica_usuario_cadastrado(cpf, usuarios):
-                contas_do_usuario = filtrar_contas_por_usuario(cpf, contas)
-                if len(contas_do_usuario) == 0:
-                    print('Este usuário não possui nenhuma conta cadastrada!')
-                else:
-                    numero_da_conta = int(input('Digite o número da conta em que deseja fazer a operação: '))
-                    conta_selecionada = selecionar_conta(numero_da_conta, contas)
-                    if conta_selecionada:
-                        valor_do_deposito = float(input('Deigite o valor que deseja depositar: '))
-                        Deposito(valor_do_deposito).registrar(conta_selecionada)
-                    else:
-                        print('Número de conta inválido!')       
-            else:
-                print('Usuário não cadastrado')
+            realiza_deposito(usuarios, contas)
         if opcao == 'e':
-            cpf = input('Informe o CPF do cliente: ')
-            if verifica_usuario_cadastrado(cpf, usuarios):
-                contas_usuario = filtrar_contas_por_usuario(cpf, contas)
-                for conta in contas_usuario:
-                    print(f"Extrato da conta número {conta.numero}")
-                    lista_de_transacoes = conta.historico.transacoes
-                    for transacao in lista_de_transacoes:
-                        print(f"Tipo: {transacao['tipo']}, Valor: {transacao['valor']}, Data: {transacao['data']} ")
-                    print(f"Saldo: {conta.saldo}")
-            else:
-                print('Usuário não possui contas cadastradas')             
+            exibe_extrato(usuarios, contas)             
         if opcao == 's':
-            cpf = input('Informe o CPF do cliente: ')
-            if verifica_usuario_cadastrado(cpf, usuarios):
-                contas_do_usuario = filtrar_contas_por_usuario(cpf, contas)
-                if len(contas_do_usuario) == 0:
-                    print('Este usuário não possui nenhuma conta cadastrada!')
-                else:
-                    numero_da_conta = int(input('Digite o número da conta em que deseja fazer a operação: '))
-                    conta_selecionada = selecionar_conta(numero_da_conta, contas)
-                    if conta_selecionada:
-                        valor_do_saque = float(input('Deigite o valor que deseja sacar: '))
-                        Saque(valor_do_saque).registrar(conta_selecionada)
-                    else:
-                        print('Número de conta inválido!')       
-            else:
-                print('Usuário não cadastrado')        
+            realiza_saque(usuarios, contas)        
         if opcao == 'q':
             break    
         
